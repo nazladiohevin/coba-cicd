@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String
+  password  String
+  createdAt DateTime  @map("created_at")
+  updateAt  DateTime? @map("update_at")
+
+  bankAccounts BankAccount[]
+  profile      Profile?
+
+  @@map("users")
+}
+
+model BankAccount {
+  id                Int           @id @default(autoincrement())
+  userId            Int           @map("user_id")
+  bankName          String        @map("bank_name")
+  bankAccountNumber String        @map("bank_account_number")
+  balance           Decimal?      @default(0)
+  transactionsFrom  Transaction[] @relation("sourceAccount")
+  transactionsTo    Transaction[] @relation("destinationAccount")
+  createdAt         DateTime      @map("created_at")
+  updateAt          DateTime?     @map("update_at")
+  deleteAt          DateTime?     @map("delete_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("bank_accounts")
+}
+
+model Transaction {
+  id                   Int       @id @default(autoincrement())
+  sourceAccountId      Int       @map("source_account_id")
+  destinationAccountId Int       @map("destination_account_id")
+  amount               Decimal
+  createdAt            DateTime  @map("created_at")
+  updateAt             DateTime? @map("update_at")
+
+  sourceAccount      BankAccount @relation("sourceAccount", fields: [sourceAccountId], references: [id])
+  destinationAccount BankAccount @relation("destinationAccount", fields: [destinationAccountId], references: [id])
+
+  @@map("transactions")
+}
+
+model Profile {
+  id             Int           @id @default(autoincrement())
+  userId         Int           @unique
+  identityType   Identity_Type @map("identity_type")
+  identityNumber String        @map("identity_number")
+  address        String?
+  createdAt      DateTime      @map("created_at")
+  updateAt       DateTime?     @map("update_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("profiles")
+}
+
+enum Identity_Type {
+  ktp
+  paspor
+  sim
+  ktm
+}
+
+enum Bank_Name {
+  bri
+  bni
+  mandiri
+  bca
+  muamalat
+}
