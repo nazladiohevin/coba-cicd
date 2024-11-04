@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generate Prisma
+        run: npx src/prisma generate
+
       # Jalankan pengujian menggunakan Jest dengan flag experimental VM modules
       - name: Run tests
         run: npm test
