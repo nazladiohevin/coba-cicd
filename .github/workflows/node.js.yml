@@ -13,11 +13,11 @@ jobs:
     steps:
       # Step untuk checkout kode dari repository
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Step untuk setup versi Node.js yang akan digunakan
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '21'
 
@@ -27,4 +27,4 @@ jobs:
 
       # Jalankan pengujian menggunakan Jest dengan flag experimental VM modules
       - name: Run tests
-        run: node --experimental-vm-modules ./node_modules/jest/bin/jest
+        run: npm test
